@@ -1,1 +1,1 @@
-# WeveNet
+# WaveNet

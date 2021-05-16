@@ -16,9 +16,7 @@ class CPPM(Packet):
     
     def post_build(self, p, pay):
         p += pay
-        self.chksum = checksum(p)
         if(self.chksum == None):
             self.chksum = checksum(p)
-            print(self.chksum)
         return p 
     

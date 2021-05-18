@@ -52,7 +52,11 @@ class Sound:
 		print("AudioFile successfully generated!")
 
 
+'''
+Test method with the example of usage of the class
+'''
+def test():
+	sound = Sound("Sample","mp3")
+	decodedAudio = sound.decodeAudio()
+	generateFile = sound.buildAudio(decodedAudio)
 
-sound = Sound("Sample","mp3")
-decodedAudio = sound.decodeAudio()
-generateFile = sound.buildAudio(decodedAudio)

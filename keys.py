@@ -1,6 +1,6 @@
 import uuid
 from base64 import b64encode
-import uuid
+
 import socket
 from OpenSSL import SSL, crypto
 import rsa 
@@ -80,4 +80,3 @@ def encrypt(message):
 
 	newMessage = rsa.encrypt(message.encode(),PUBLIC_KEY)
 	return newMessage
-

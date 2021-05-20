@@ -1,21 +1,14 @@
 from scapy.all import *
 from scapy.fields import *
 from scapy.layers.inet import IP,TCP
-from Protocol import *
+from CPPM import *
 
 class Service():
     
     def __init__(self, tcp_ip=None, tcp_dport = 5005, buffer_size = 1024):
-        self.sa = SecurityAssociation(ESP, spi=0xdeadbeef, crypt_algo='AES-CBC', crypt_key=str('2948404D63516654').encode())  
         self.TCP_IP = tcp_ip
         self.TCP_DPORT = tcp_dport 
         self.BUFFER_SIZE = buffer_size 
-    
-    def encryptPacket(self, packet):
-        return self.sa.encrypt(packet)
-      
-    def decryptPacket(self, packet):
-        return self.sa.decrypt(packet)
         
     def createPacket(self, payload, ver, dst_ip, port):
         packet_to_send = IP(dst=dst_ip)
@@ -40,18 +33,16 @@ class Service():
         s.bind((self.TCP_IP, self.TCP_DPORT))
         s.listen(1)
         s.settimeout(100)
-        while 1:
+        while True:
             conn, addr = s.accept()
             print('Connection address: {}'.format(addr))
             try:
                 data = conn.recv(self.BUFFER_SIZE)
                 if data:
                     packet = IP(data)
-                    decrypted_packet = self.decryptPacket(packet)
-                    decrypted_packet.show()
-                    received_packet = CPPM(decrypted_packet.getlayer(Raw).load)
+                    received_packet = CPPM(packet.getlayer(Raw).load)
                     received_packet.show()
-                    return received_packet
+                    #return received_packet
     
                 else:
                     pass

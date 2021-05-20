@@ -1,27 +1,42 @@
 import logging
+import time
 logging.getLogger("scapy.runtime").setLevel(logging.INFO)
-from Protocol import *
+from CPPM import *
 from Service import *
+from keys import *
 
-
-TCP_IP = '172.17.0.2'
-TCP_PORT = 5005
 BUFFER_SIZE = 1024  
 
-def main():
-    try:    
+LIST_OF_HOST = []
 
-        ps = Service('172.17.0.2')
-        received_packet = ps.receivePacket()
-        print(received_packet)
-    except Exception as client_error:
-       # print(client_error)
-       print('Error: {}'.format(client_error))
-    
+#def choosingRoute():
+	
 
+#def sendKeys():
 
-if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('[+] Bye!')
+def server():
+	
+	if(openKeys()):
+		print("Reading keys")
+	else:
+		print("Creating keys...")
+		generate_keypair()
+	if(verifyKeys() == False):
+		print("There was an error reading the keys")
+		exit(0)
+	print("Server is running...")
+	try:    
+		
+		#sendKeys()
+		ps = Service('127.0.0.1')
+	
+		received_packet = ps.receivePacket()
+		print(decrypt(received_packet))
+	
+	except Exception as client_error:
+
+	   print('Error: {}'.format(client_error))
+
+if __name__ == '__main__':
+		
+	server()

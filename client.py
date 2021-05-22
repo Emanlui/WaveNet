@@ -8,7 +8,6 @@ import json
 
 
 LIST_OF_HOST = []
-
 def getHost():
 
 	global LIST_OF_HOST
@@ -26,18 +25,20 @@ def getHost():
 
 def choosingRoute(hops):
 
-	tmp_list = []
+    tmp_list = []
 
-	while(hops):
-		index = random.randint(0,len(LIST_OF_HOST)-1)	
+    while(hops):
+        index = random.randint(0,len(LIST_OF_HOST)-1)	
 	
-		if(LIST_OF_HOST[index]["ip"] not in tmp_list):
+        if(LIST_OF_HOST[index]["ip"] not in tmp_list):
 
-			tmp_list.append(LIST_OF_HOST[index]["ip"])
-		
-			hops = hops - 1
-			print(LIST_OF_HOST[index]["ip"])
+            tmp_list.append(LIST_OF_HOST[index]["key"])
+            hops = hops - 1
+            #print(LIST_OF_HOST[index]["key"])
+     
+    return tmp_list
 
+    
 
 def client():
 
@@ -51,20 +52,23 @@ def client():
 		exit(0)
 
 	try:    
-
-		payload="Este texto es cifrado" 
-		payload = encrypt(payload)
-		ps = Service('127.0.0.1')
-		packet = ps.createPacket(payload, 5,'127.0.0.1',6000)
-		#packet.show()
-		ps.sendPacket(packet)
+            
+            encrypt_keys = choosingRoute(3)
+            payload="Este texto es cifrado" 
+            payload = encrypt(payload)
+            ps = Service('127.0.0.1')
+            packet= ps.createPacket(payload, 5,'127.0.0.1',6000)
+            packet = ps.encryptPacketWithKeysList(packet, encrypt_keys)
+            packet.show()
+            #packet.show()
+            ps.sendPacket(packet)
 		
 	except Exception as client_error:
-	   print('Error: {}'.format(client_error))
+            print(client_error)
+            print('Error: {}'.format(client_error))
 
 if __name__ == '__main__':
-		
-	#choosingRoute(3)
-	getHost()
-	client()
+   getHost()
+   #choosingRoute(3)
+   client()
 

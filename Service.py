@@ -2,6 +2,7 @@ from scapy.all import *
 from scapy.fields import *
 from scapy.layers.inet import IP,TCP
 from CPPM import *
+import re as regex
 
 class Service():
     
@@ -9,6 +10,23 @@ class Service():
         self.TCP_IP = tcp_ip
         self.TCP_DPORT = tcp_dport 
         self.BUFFER_SIZE = buffer_size 
+      
+    def encryptPacket(self, packet, key):
+        sa = SecurityAssociation(ESP, spi=0xdeadbeef, crypt_algo='AES-CBC', crypt_key=str(key).encode()) 
+        return sa.encrypt(packet)
+
+    def decryptPacket(self, packet, key):
+        sa = SecurityAssociation(ESP, spi=0xdeadbeef, crypt_algo='AES-CBC', crypt_key=str(key).encode()) 
+        return sa.decrypt(packet)
+    
+    def encryptPacketWithKeysList(self, packet, keys):
+        for key in keys:
+            packet = self.encryptPacket(packet,self.getKey(key))
+        return packet
+    
+    def getKey(self, key_string):
+        res = re.search('PublicKey\((.+?)\,', key_string)
+        return res.group(1)
         
     def createPacket(self, payload, ver, dst_ip, port):
         packet_to_send = IP(dst=dst_ip)
@@ -27,7 +45,8 @@ class Service():
         
         except Exception as client_error:
             print('Error: {}'.format(client_error))
-           
+      
+    
     def receivePacket(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((self.TCP_IP, self.TCP_DPORT))

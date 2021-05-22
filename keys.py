@@ -43,7 +43,7 @@ def createFileKeys(private, public):
 
 def generate_keypair():
 
-	publicKey, privateKey = rsa.newkeys(1024)
+	publicKey, privateKey = rsa.newkeys(52)
 
 	createFileKeys(privateKey,publicKey)
 

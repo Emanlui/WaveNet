@@ -1,3 +1,10 @@
+#python3 -m pip install sounddevice
+#sudo apt-get install libportaudio2
+import sounddevice as sd
+
+#python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
+from scipy.io.wavfile import write 
+
 '''
 	This class contains
 	the methods related
@@ -17,6 +24,21 @@ class Sound:
 			object.fullName = audioFile+"."+extension
 		except:
 			print("Audio File Not Found: ",audioFile)
+
+
+	'''
+	Parameters: (int) recording time
+	this methods record during the time given
+	and creates an audio file
+	'''
+	def recordAudio(object, seconds):
+
+		fs = 44100  # Sample rate
+
+		myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
+		sd.wait()  # Wait until recording is finished
+		write('output.wav', fs, myrecording)  # Save as WAV file 
+
 
 	'''
 	Parameters: the audio file name, contained
@@ -57,6 +79,9 @@ Test method with the example of usage of the class
 '''
 def test():
 	sound = Sound("Sample","mp3")
-	decodedAudio = sound.decodeAudio()
-	generateFile = sound.buildAudio(decodedAudio)
+	sound.recordAudio(2)
+	#decodedAudio = sound.decodeAudio()
+	#generateFile = sound.buildAudio(decodedAudio)
 
+
+test()

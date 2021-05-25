@@ -20,3 +20,4 @@ class CPPM(Packet):
             self.chksum = checksum(p)
         return p 
     
+bind_layers(TCP, CPPM, sport=6000, dport=6000)

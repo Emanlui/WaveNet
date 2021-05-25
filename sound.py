@@ -9,6 +9,9 @@ from scipy.io.wavfile import write
 import os
 import Morse.morseToText
 
+#UNIT PERIOD 0.3
+#FREQUENCY 500
+
 '''
 	This class contains
 	the methods related
@@ -21,15 +24,6 @@ import Morse.morseToText
 '''
 class Sound:
 
-	def __init__(object, audioFile,extension):
-		try:
-			object.audioFile = audioFile
-			object.extension = extension
-			object.fullName = audioFile+"."+extension
-		except:
-			print("Audio File Not Found: ",audioFile)
-
-
 	'''
 	Parameters: (int) recording time
 	this methods record during the time given
@@ -40,8 +34,11 @@ class Sound:
 		fs = 44100  # Sample rate
 
 		myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
+		print("Se ha empezado a grabar audio durante "+str(seconds)+" segundos")
 		sd.wait()  # Wait until recording is finished
 		write('output.wav', fs, myrecording)  # Save as WAV file 
+
+		print("Se ha terminado la grabacion")
 
 
 	'''
@@ -51,7 +48,7 @@ class Sound:
 	def decodeAudio(object):
 		
 		
-		codefile_wav = "morse.wav"
+		codefile_wav = "wk.wav"
 
 
 		the_file = Morse.morseToText.SoundFile(codefile_wav)
@@ -72,6 +69,18 @@ class Sound:
 		s = str_translator.totext(code_string)
 
 		print(code_string)
+
+
+		fileName = "output.txt"
+		file = open(fileName,"w+")
+		try:
+			file.write(s)
+			file.close()
+		except:
+			print("Error: File could not be created or write on!")
+			return None
+
+		print("Audio Content successfully written on output.txt!")
 		print(s)
 
 
@@ -114,8 +123,8 @@ class Sound:
 Test method with the example of usage of the class
 '''
 def test():
-	sound = Sound("Sample","mp3")
-	#sound.recordAudio(2)
+	sound = Sound()
+	#sound.recordAudio(54)
 	decodedAudio = sound.decodeAudio()
 	#generateFile = sound.buildAudio(decodedAudio)
 

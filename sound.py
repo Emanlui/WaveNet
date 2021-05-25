@@ -5,6 +5,10 @@ import sounddevice as sd
 #python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
 from scipy.io.wavfile import write 
 
+#this is to import the decode morse library
+import os
+import Morse.morseToText
+
 '''
 	This class contains
 	the methods related
@@ -45,8 +49,40 @@ class Sound:
 	within the folder of the proyect
 	'''
 	def decodeAudio(object):
+		
+		
+		codefile_wav = "morse.wav"
 
-		with open(object.fullName, "rb") as fd:
+
+		the_file = Morse.morseToText.SoundFile(codefile_wav)
+		#the_file = SoundFile("wikipedia.wav")
+		the_file.saveplot("original")
+
+		the_filter = Morse.morseToText.SignalFilter()
+		the_filter.filter(the_file)
+		#the_file.saveas("filtered.wav")
+
+		analyzer = Morse.morseToText.SpectreAnalyzer()
+		pulses = analyzer.findpulses(the_file)
+
+		pul_translator = Morse.morseToText.PulsesTranslator()
+		code_string = pul_translator.tostring(pulses)
+
+		str_translator = Morse.morseToText.StringTranslator()
+		s = str_translator.totext(code_string)
+
+		print(code_string)
+		print(s)
+
+
+		#path = os.path.dirname(os.path.realpath(__file__))
+		#path = path+"/Morse/"
+
+		
+		#os.system("python3 "+path+"morse-to-text.py morse_sample.wav")
+
+	'''
+		with open("output.wav", "rb") as fd:
 			contents = fd.read()
 
 		if (contents != None):
@@ -55,7 +91,7 @@ class Sound:
 
 		else:
 			print("Audio Could not be decoded!")
-
+	'''
 
 	'''
 	Parameters: requires the decoded contents of the audio
@@ -79,8 +115,8 @@ Test method with the example of usage of the class
 '''
 def test():
 	sound = Sound("Sample","mp3")
-	sound.recordAudio(2)
-	#decodedAudio = sound.decodeAudio()
+	#sound.recordAudio(2)
+	decodedAudio = sound.decodeAudio()
 	#generateFile = sound.buildAudio(decodedAudio)
 
 

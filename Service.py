@@ -16,7 +16,7 @@ class Service():
         return sa.encrypt(packet)
 
     def decryptPacket(self, packet, key):
-        sa = SecurityAssociation(ESP, spi=0xdeadbeef, crypt_algo='AES-CBC', crypt_key=str(key).encode()) 
+        sa = SecurityAssociation(ESP, spi=0xdeadbeef, crypt_algo='Aasd', crypt_key=str(key).encode()) 
         return sa.decrypt(packet)
     
     def encryptPacketWithKeysList(self, payload, keys_ip):

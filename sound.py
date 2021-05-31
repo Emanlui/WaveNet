@@ -40,16 +40,19 @@ class Sound:
 	Outs: mp3 formed by the contents received
 	'''
 	def buildAudio(object, decodedAudio):
-		fileName = object.audioFile+"Generated."+object.extension
-		file = open(fileName,"w+")
-		try:
-			file.write(decodedAudio)
-			file.close()
-		except:
-			print("Error: File could not be created or write on!")
-			return None
+            
+            #fileName = object.audioFile+"Generated."+object.extension
+            fileName = object.audioFile+"Generated."+"txt"
+            #file = open(fileName,"w+")
+            file = open(fileName,"wb")
+            try:
+                file.write(decodedAudio)
+                file.close()
+            except:
+                print("Error: File could not be created or write on!")
+                return None
 
-		print("AudioFile successfully generated!")
+            print("AudioFile successfully generated!")
 
 
 '''
@@ -59,4 +62,6 @@ def test():
 	sound = Sound("Sample","mp3")
 	decodedAudio = sound.decodeAudio()
 	generateFile = sound.buildAudio(decodedAudio)
+
+test()
 

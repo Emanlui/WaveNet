@@ -43,7 +43,7 @@ def createFileKeys(private, public):
 
 def generate_keypair():
 
-	publicKey, privateKey = rsa.newkeys(52)
+	publicKey, privateKey = rsa.newkeys(512)
 
 	createFileKeys(privateKey,publicKey)
 
@@ -71,12 +71,22 @@ def verifyKeys():
 		return False
 	return True
 
-def decrypt(message):
+def decryptMyPacket(message):
 	
 	newMessage = rsa.decrypt(message, PRIVATE_KEY).decode()	  
 	return newMessage
 
-def encrypt(message):
+def encryptMyPacket(message):
 
 	newMessage = rsa.encrypt(message.encode(),PUBLIC_KEY)
 	return newMessage
+
+def encrypt(message, pub_key):
+	#print(pub_key)
+	pub_key = "-----BEGIN RSA PUBLIC KEY-----\n" + "MEgCQQCNTEZfTmzuTOxRUVELgHn2L4icNlrsVWYewO+IN0G0bNkH5GEOtSWKA6tNKXy/X8J8xLgyjezv9dpi0g2nssszAgMBAAE=" + "\n-----END RSA PUBLIC KEY-----\n"
+	
+	#print(pub_key)
+
+	PUBLIC_KEY = rsa.PublicKey.load_pkcs1(pub_key)
+	#newMessage = rsa.encrypt(message.encode(),pub_key)
+	return message

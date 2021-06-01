@@ -15,21 +15,21 @@ def createPacket(msg, destination_ip, destination_port, key, ip):
 	getHost()
 	hops = choosingRoute(2, ip)
 	
-	print(hops)
+	#print(hops)
 	
 	msg1 = encrypt(base64.b64encode(msg.encode("utf-8")), key)
 	msg1 = str(destination_ip)+"\n"+str(destination_port)+"\n" + msg1.decode("utf-8")
 
-	print(msg1)
+	#print(msg1)
 
 	msg2 = encrypt(base64.b64encode(msg1.encode("utf-8")), hops[0][2])
 	msg2 = str(hops[0][0])+"\n"+str(hops[0][1])+"\n" + msg2.decode("utf-8")
 	
-	print(msg2)
+	#print(msg2)
 
 	msg3 = encrypt(base64.b64encode(msg2.encode("utf-8")), hops[1][2])
 	msg3 = str(hops[1][0])+"\n"+str(hops[1][1])+"\n" + msg3.decode("utf-8")
-	print(msg3)
+	#print(msg3)
 	return msg3 
 
 def getHost():
@@ -58,7 +58,7 @@ def choosingRoute(hops, ip):
 			host = [LIST_OF_HOST[index]["ip"], LIST_OF_HOST[index]["port"],LIST_OF_HOST[index]["key"]]
 			tmp_list.append(host)
 			hops = hops - 1
-			#print(LIST_OF_HOST[index]["key"])
+			#print(LIST_OF_HOST[in`dex]["key"])
 	 
 	return tmp_list
 
@@ -76,19 +76,17 @@ def client():
 		exit(0)
 
 	try:  
-			payload="Este texto es cifrado" 
-			
-			ps = Service('127.0.0.1')
-			packet = ps.encryptPacketWithKeysList(payload, encrypt_keys_ip)
-			keys_rev = encrypt_keys_ip[::-1]
+            payload= createPacket("Mi mensaje", "171.23.34.2", 8080, "AAAAB3NzaC1yc2EAAAADAQABAAABgQDYg/fQ1DEJWZUoXx/kV/uaTYdj4lWn8Ch7OY5/UtUQ5Tfcc46up/X7rucVun4QG5XS54hpQ8Vgm/dzF8DETZrvT9bljMsMRk0SWpytegp1sd9OospwKnuL6dafVo41qp6fjpiKlbEtN4OEJ4eKH2mVGlXIqsqQyNgSgQWrSEv8wzm9qGqX5eUadGiI5EvaMo3xFY1amv/ELm5jvBjnGHZUGVrguRQl6Qv0mo5EeBC5KPqOTURfIvq4UjP/hbDcTLfEWCSF/nKM7zPYnyG55Ze4GcstARirbP3moNsh/DlMCdsM6w8p0KR84sSNSja63B7YN36VkzPltL10rS545QWVNuEzeRa4a+WDKBBAnCgyacd3FLEpGWdKtvgDkYbOduF9iRyaT+UEZ6N2MzNVUu6pKywuIIqZAQpqXX7HblYGYh7vUfteWRnrjSoLugX9X/0gfDX/mp+0eMOMDqVmwy5Iz8zYIm6SAIZdruExUs9487vkM/6+OS+9KlSb6hkQ+TU=", "171.12.34.2")
 
-			packet.show()
-			ps.sendPacket(packet)
 			
-			'''
-			
-			
-			'''
+            ps = Service('127.0.0.1')
+            packet = ps.createPacket(payload, 3, "171.23.34.2", 6000)
+            packet = ps.encryptPacket(packet, "2s5v8y/B?E(H+MbQ")            
+            packet.show()
+            packet = ps.decryptPacket(packet, "2s5v8y/B?E(H+MbQ")
+            packet.show()
+            ps.sendPacket(packet)
+
 
 	except Exception as client_error:
 			print(client_error)
@@ -96,12 +94,12 @@ def client():
 
 if __name__ == '__main__':
 
-	#client()	
+	client()	
   
-	ip = sys.argv[1]
-	getHost()
+	#ip = sys.argv[1]
+	#getHost()
 
-	createPacket("Mi mensaje", ip, 8080, "AAAAB3NzaC1yc2EAAAADAQABAAABgQDYg/fQ1DEJWZUoXx/kV/uaTYdj4lWn8Ch7OY5/UtUQ5Tfcc46up/X7rucVun4QG5XS54hpQ8Vgm/dzF8DETZrvT9bljMsMRk0SWpytegp1sd9OospwKnuL6dafVo41qp6fjpiKlbEtN4OEJ4eKH2mVGlXIqsqQyNgSgQWrSEv8wzm9qGqX5eUadGiI5EvaMo3xFY1amv/ELm5jvBjnGHZUGVrguRQl6Qv0mo5EeBC5KPqOTURfIvq4UjP/hbDcTLfEWCSF/nKM7zPYnyG55Ze4GcstARirbP3moNsh/DlMCdsM6w8p0KR84sSNSja63B7YN36VkzPltL10rS545QWVNuEzeRa4a+WDKBBAnCgyacd3FLEpGWdKtvgDkYbOduF9iRyaT+UEZ6N2MzNVUu6pKywuIIqZAQpqXX7HblYGYh7vUfteWRnrjSoLugX9X/0gfDX/mp+0eMOMDqVmwy5Iz8zYIm6SAIZdruExUs9487vkM/6+OS+9KlSb6hkQ+TU=", ip)
+	#createPacket("Mi mensaje", ip, 8080, "AAAAB3NzaC1yc2EAAAADAQABAAABgQDYg/fQ1DEJWZUoXx/kV/uaTYdj4lWn8Ch7OY5/UtUQ5Tfcc46up/X7rucVun4QG5XS54hpQ8Vgm/dzF8DETZrvT9bljMsMRk0SWpytegp1sd9OospwKnuL6dafVo41qp6fjpiKlbEtN4OEJ4eKH2mVGlXIqsqQyNgSgQWrSEv8wzm9qGqX5eUadGiI5EvaMo3xFY1amv/ELm5jvBjnGHZUGVrguRQl6Qv0mo5EeBC5KPqOTURfIvq4UjP/hbDcTLfEWCSF/nKM7zPYnyG55Ze4GcstARirbP3moNsh/DlMCdsM6w8p0KR84sSNSja63B7YN36VkzPltL10rS545QWVNuEzeRa4a+WDKBBAnCgyacd3FLEpGWdKtvgDkYbOduF9iRyaT+UEZ6N2MzNVUu6pKywuIIqZAQpqXX7HblYGYh7vUfteWRnrjSoLugX9X/0gfDX/mp+0eMOMDqVmwy5Iz8zYIm6SAIZdruExUs9487vkM/6+OS+9KlSb6hkQ+TU=", ip)
 
 	
 

@@ -60,8 +60,8 @@ def verifyKeys():
 	try:
 		# create a message
 		message = 'This is a test'
-		encrypt_message = encrypt(message)
-		decrypt_message = decrypt(encrypt_message)
+		encrypt_message = encryptMyPacket(message)
+		decrypt_message = decryptMyPacket(encrypt_message)
 		if(message == decrypt_message):
 			return True
 		else:

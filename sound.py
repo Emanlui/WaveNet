@@ -6,12 +6,65 @@ import sounddevice as sd
 from scipy.io.wavfile import write 
 
 #this is to import the decode morse library
-import os
+#Retrieved from https://code.google.com/archive/p/morse-to-text/source/default/source
 import Morse.morseToText
+
+#To increase audio volume from an Audio
+#pip3 install pydub
+#pip3 install ffprobe
+#sudo apt-get update  
+#sudo apt-get install ffmpeg  
+#sudo apt-get install frei0r-plugins  
+from pydub import AudioSegment
+
+#To reduce noise from an audio file
+#pip3 install noisereduce
+# (STILL NOT WORKING)
+#Retrieved from: https://github.com/timsainb/noisereduce
+#import noisereduce as nr
+
+import numpy as np
+import scipy as sp
+from scipy.io.wavfile import read
+from scipy import signal
+
 
 #UNIT PERIOD 0.3
 #FREQUENCY 500
 
+
+'''
+Parameters: audio file name
+this method reduces the noise from
+an audio file
+'''
+def noiseReduce(codeFile):
+	print("called noice reduce")
+	'''
+	# load data
+	rate, data = wavfile.read("mywav.wav")
+	# select section of data that is noise
+	noisy_part = data[10000:15000]
+	# perform noise reduction
+	reduced_noise = nr.reduce_noise(audio_clip=data, noise_clip=noisy_part, verbose=True)
+	'''
+	(Frequency, array) = read("output.wav")	
+	
+
+	FourierTransformation = sp.fft(array) # Calculating the fourier transformation of the signal
+
+	GuassianNoise = np.random.rand(len(FourierTransformation)) # Adding guassian Noise to the signal.
+	print("GuassianNoise "+str(GuassianNoise))
+
+	NewSound = sum(GuassianNoise, array)
+
+	b,a = signal.butter(5, 1000/(Frequency/2), btype='highpass') 
+	filteredSignal = signal.lfilter(b,a,NewSound)
+
+	c,d = signal.butter(5, 380/(Frequency/2), btype='lowpass') # ButterWorth low-filter
+	newFilteredSignal = signal.lfilter(c,d,filteredSignal) # Applying the filter to the signal
+
+	write("NewFilteredOutput.wav", Frequency, newFilteredSignal) # Saving it to the file.
 '''
 	This class contains
 	the methods related
@@ -41,6 +94,25 @@ class Sound:
 		print("Se ha terminado la grabacion")
 
 
+
+	'''
+	Parameters: audio file name
+	this method increases the volume of a 
+	audio file by 50db
+	'''
+	def increase_Volume(codeFile):
+
+		song = AudioSegment.from_wav(codefile_wav)
+
+		# increase volume by 10 dB
+		song = song + 50
+
+		# save the output
+		song.export("output.wav", "wav")
+
+
+
+
 	'''
 	Parameters: the audio file name, contained
 	within the folder of the proyect
@@ -48,7 +120,12 @@ class Sound:
 	def decodeAudio(object):
 		
 		
-		codefile_wav = "wk.wav"
+		codefile_wav = "output.wav"
+
+
+		#increase_Volume(codefile_wav)
+
+		noiseReduce(codefile_wav)
 
 
 		the_file = Morse.morseToText.SoundFile(codefile_wav)
@@ -82,25 +159,6 @@ class Sound:
 
 		print("Audio Content successfully written on output.txt!")
 		print(s)
-
-
-		#path = os.path.dirname(os.path.realpath(__file__))
-		#path = path+"/Morse/"
-
-		
-		#os.system("python3 "+path+"morse-to-text.py morse_sample.wav")
-
-	'''
-		with open("output.wav", "rb") as fd:
-			contents = fd.read()
-
-		if (contents != None):
-			print("Audio Found and decoded!")
-			return contents
-
-		else:
-			print("Audio Could not be decoded!")
-	'''
 
 	'''
 	Parameters: requires the decoded contents of the audio

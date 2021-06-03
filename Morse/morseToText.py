@@ -78,7 +78,7 @@ class SignalFilter:
 		#3 - busco la frecuencia
 		band = 2000
 		# ignore the first 200Hz
-		hzignored = 200
+		hzignored = 500
 		frec = hzignored + argmax(trans_real[hzignored:])
 		#print max(trans_real)
 		#print trans_real[frec]

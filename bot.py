@@ -4,6 +4,7 @@ import sys
 import os
 import random
 import time
+from server import sendKeys
 
 def getHostData(raw_string):
 	
@@ -18,26 +19,31 @@ def getHostData(raw_string):
 	raw_string = raw_string[1].split(" ")
 	ip = raw_string[0]
 	#print(ip)
-	key = "lajsdkljasldjasldjlajd="
-	#print(key)
+	key = sendKeys(ip, 6667)
+	key = key.decode("utf-8")
+	
+	#print("parsing key")
+	key = key[31:]
+	#print("parsing key")
+	key = key[:-30]
+	#print("parsing key")
 	line = ""
 	line += ip
 	line += "|"
 	line += hostname
 	line += "|"
-	line += iden
+	line += "6667"
 	line += "|"
 	line += key
+	line += "\n"	
+	line = line.replace("\n", "")
 	line += "\n"
-	
 	#print(line)
 	
 	return line
 
 def addHost(raw_data):
-	
 	line = getHostData(raw_data)
-	
 	with open('host.routes', 'a') as f:
 		f.write(line)
 	
@@ -51,7 +57,7 @@ def deleteHost(raw_data):
 
 	lines = a_file.readlines()
 	a_file.close()
-	
+	#print(lines)
 	index = lines.index(line)
 
 	del lines[index]
@@ -65,7 +71,7 @@ def deleteHost(raw_data):
 	
 	print("Host deleted.")
 	
-def sendKeys(msg):
+def serverManagment():
 
 	server = "209.97.147.243"       #settings
 	channel = "#channel1"
@@ -85,7 +91,7 @@ def sendKeys(msg):
 	irc.send(bytes("JOIN "+ channel +"\n", "UTF-8"))        #join the chan
 	print("Enviando mensaje\n")
 	time.sleep(3)
-	irc.send(bytes("PRIVMSG ", "UTF-8") + bytes(channel, "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))
+	#irc.send(bytes("PRIVMSG ", "UTF-8") + bytes(channel, "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))
 	#irc.close()
 	
 	while(1):
@@ -109,4 +115,4 @@ def sendKeys(msg):
 		except Exception:
 			pass
 	
-sendKeys("alooo12312")
+serverManagment()

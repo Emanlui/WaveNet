@@ -19,19 +19,6 @@ class Service():
         sa = SecurityAssociation(ESP, spi=0xdeadbeef, crypt_algo='AES-CBC', crypt_key=str(key).encode()) 
         return sa.decrypt(packet)
     
-    def encryptPacketWithKeysList(self, payload, keys_ip):
- 
-        for i in range(len(keys_ip)):
-            if(i == 0):
-                packet = self.createPacket(payload, 5,keys_ip[0][1],6000)
-                packet = self.encryptPacket(packet,self.getKey(keys_ip[0][0]))
-
-            else:
-                packet = self.createPacket(packet, 5,keys_ip[i][1],6000)
-                packet = self.encryptPacket(packet,self.getKey(keys_ip[i][0]))
-            #packet.show()
-        return packet
-    
     def getKey(self, key_string):
         res = re.search('PublicKey\((.+?)\,', key_string)
         return res.group(1)

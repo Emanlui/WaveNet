@@ -91,67 +91,48 @@ def sendKeys(ip, port):
 	return key
 
 def listenForMessage(filename):
-    try:
-        file = open(filename, "rb")
-        data = file.read()
-        file.close()
-        if(len(data)>0):
-            file = open(filename, "w")
-            file.truncate()
-            file.close()   
-           
-            return data    
-        else:
-            return False
-    except IOError as e:
-        print(e)
-        return False
-    
+	try:
+		file = open(filename, "rb")
+		data = file.read()
+		file.close()
+		if(len(data)>0):
+			file = open(filename, "w")
+			file.truncate()
+			file.close()   
+		   
+			return data    
+		else:
+			return False
+	except IOError as e:
+		print(e)
+		return False
+	
 def joinMessageBytes(message_chunks):
-    return b''.join(message_chunks)
-    
+	return b''.join(message_chunks)
+	
 def chunkMessage(message, chunk_size):
-    chunks = [message[i:i+chunk_size] for i in range(0, len(message), chunk_size)]
-    return chunks
+	chunks = [message[i:i+chunk_size] for i in range(0, len(message), chunk_size)]
+	return chunks
 
 def server():
 	
 	my_ip = sys.argv[1]
 	my_port = sys.argv[2]
 
-    #if(openKeys()):
-     #   print("Reading keys")
-    #else:
-     #   print("Creating keys...")
-      #  generate_keypair()
-    #if(verifyKeys() == False):
-     #   print("There was an error reading the keys")
-      #  exit(0)
-       # print("Server is running...")
-    try:    
-        while(True):
-            sleep(0.9000)
-            print("Listening messages...")
-            message = listenForMessage("SampleGenerated.txt")
-            print(message)
-            if(message):
-                chunked_message = chunkMessage(message, 128)
-                for m_bytes in chunked_message:
-                    print(m_bytes)
-            
-        #sendKeys()
-			ps = Service(srv_ip, srv_port)
+	try:    
+	   
+			ps = Service(my_ip, int(my_port))
 		
 			received_packet = ps.receivePacket()
-			print(decrypt(received_packet))
+			print(received_packet)
 	
-    except Exception as client_error:
+	except Exception as client_error:
 
-        print('Error: {}'.format(client_error))
+		print('Error: {}'.format(client_error))
 
 if __name__ == '__main__':
 		
-    server()
+	server()
 
 
 

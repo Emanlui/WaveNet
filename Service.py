@@ -32,11 +32,9 @@ class Service():
     
     def sendPacket(self, packet):
         try:    
-            print("#1")
+
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print("#2")
             s.connect((self.TCP_IP, int(self.TCP_DPORT)))
-            print("#3")
             socketsr1 = StreamSocket(s, CPPM)
             
             ans = socketsr1.sr1(packet, timeout=2, verbose=False)

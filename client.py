@@ -10,7 +10,7 @@ import sys
 
 LIST_OF_HOST = []
 
-def sendDataToserver(ip, port):
+def sendDataToserver(ip, port, srv_ip, srv_port):
 
 	pub = ""		
 
@@ -19,9 +19,8 @@ def sendDataToserver(ip, port):
 		pub = pubk.read()
 
 	msg = pub.decode() + "\n" + ip  + "\n" + port
-	print("a")
-	ps = Service(ip, port) 
-	packet = ps.createPacket(msg, 1, ip, int(port))
+	ps = Service(srv_ip, int(srv_port)) 
+	packet = ps.createPacket(msg, 1, srv_ip, int(srv_port))
 	packet.show()
 	ps.sendPacket(packet)
 
@@ -42,7 +41,7 @@ def client():
 		print("There was an error reading the keys")
 		exit(0)
 
-	sendDataToserver(my_ip, my_port)
+	sendDataToserver(my_ip, my_port, srv_ip, srv_port)
 
 	while(True):	
 	

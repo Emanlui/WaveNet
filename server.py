@@ -139,7 +139,6 @@ def server():
                         packet = IP(data)
                         received_packet = packet.getlayer(CPPM)
                         received_packet.show()
-                        return received_packet
         
                     else:
                         pass

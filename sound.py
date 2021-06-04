@@ -31,6 +31,7 @@ from scipy import signal
 
 #UNIT PERIOD 0.3
 #FREQUENCY 500
+#SPACE IS |
 
 
 '''
@@ -54,10 +55,10 @@ def noiseReduce(codeFile):
 	FourierTransformation = sp.fft(array) # Calculating the fourier transformation of the signal
 
 	GuassianNoise = np.random.rand(len(FourierTransformation)) # Adding guassian Noise to the signal.
-	print("GuassianNoise "+str(GuassianNoise))
+	#print("GuassianNoise "+str(GuassianNoise))
 
-	NewSound = sum(GuassianNoise, array)
-
+	#NewSound = sum(GuassianNoise, array)
+	NewSound = GuassianNoise
 	b,a = signal.butter(5, 1000/(Frequency/2), btype='highpass') 
 	filteredSignal = signal.lfilter(b,a,NewSound)
 
@@ -65,6 +66,24 @@ def noiseReduce(codeFile):
 	newFilteredSignal = signal.lfilter(c,d,filteredSignal) # Applying the filter to the signal
 
 	write("NewFilteredOutput.wav", Frequency, newFilteredSignal) # Saving it to the file.
+
+
+'''
+Parameters: audio file name
+this method increases the volume of a 
+audio file by 50db
+'''
+def increase_Volume(codeFile):
+
+	song = AudioSegment.from_wav(codeFile)
+
+	# increase volume by 50 dB
+	song = song + 50
+
+	# save the output
+	song.export("output.wav", "wav")
+
+
 '''
 	This class contains
 	the methods related
@@ -93,26 +112,6 @@ class Sound:
 
 		print("Se ha terminado la grabacion")
 
-
-
-	'''
-	Parameters: audio file name
-	this method increases the volume of a 
-	audio file by 50db
-	'''
-	def increase_Volume(codeFile):
-
-		song = AudioSegment.from_wav(codefile_wav)
-
-		# increase volume by 10 dB
-		song = song + 50
-
-		# save the output
-		song.export("output.wav", "wav")
-
-
-
-
 	'''
 	Parameters: the audio file name, contained
 	within the folder of the proyect
@@ -122,10 +121,10 @@ class Sound:
 		
 		codefile_wav = "output.wav"
 
+		increase_Volume("output.wav")
+		
 
-		#increase_Volume(codefile_wav)
-
-		noiseReduce(codefile_wav)
+		#noiseReduce(codefile_wav)
 
 
 		the_file = Morse.morseToText.SoundFile(codefile_wav)

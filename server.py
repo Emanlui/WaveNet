@@ -121,10 +121,33 @@ def server():
 
 	try:    
 	   
-			ps = Service(my_ip, int(my_port))
-		
-			received_packet = ps.receivePacket()
-			print(received_packet)
+            #ps = Service(my_ip, int(my_port))
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind((my_ip, int(my_port)))
+            s.listen(1)
+            s.settimeout(100)
+
+            while True:
+              
+                conn, addr = s.accept()
+
+                print('Connection address: {}'.format(addr))
+                try:
+
+                    data = conn.recv(BUFFER_SIZE)
+                    if data:
+                        packet = IP(data)
+                        received_packet = packet.getlayer(CPPM)
+                        received_packet.show()
+                        return received_packet
+        
+                    else:
+                        pass
+                except Exception as server_error:
+                    #print(server_error)
+                    print('Error: {}'.format(server_error))
+                    conn.close()
+            
 	
 	except Exception as client_error:
 

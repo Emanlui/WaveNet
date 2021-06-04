@@ -55,7 +55,7 @@ def client():
 			
 			ps = Service(srv_ip, srv_port) 
 			packet = ps.createPacket(my_msg, 1, srv_ip, int(srv_port))
-			packet.show()
+			#packet.show()
 			ps.sendPacket(packet)
 
 		except Exception as client_error:

@@ -12,21 +12,16 @@ def getHostData(raw_string):
 	raw_string = raw_string.split("!")
 	
 	hostname = raw_string[0]
-	#print(hostname)
 	raw_string = raw_string[1].split("@")
 	iden = raw_string[0]
-	#print(iden)
 	raw_string = raw_string[1].split(" ")
 	ip = raw_string[0]
-	#print(ip)
 	key = sendKeys(ip, 6667)
 	key = key.decode("utf-8")
 	
-	#print("parsing key")
 	key = key[31:]
-	#print("parsing key")
 	key = key[:-30]
-	#print("parsing key")
+	
 	line = ""
 	line += ip
 	line += "|"
@@ -38,7 +33,6 @@ def getHostData(raw_string):
 	line += "\n"	
 	line = line.replace("\n", "")
 	line += "\n"
-	#print(line)
 	
 	return line
 
@@ -71,37 +65,42 @@ def deleteHost(raw_data):
 	
 	print("Host deleted.")
 	
-def serverManagment():
+def closeServer(irc):
+	
+	irc.close()
+	
+	print("Server closed succesfully.")
+	
+	return 0
 
-	server = "209.97.147.243"       #settings
+def serverStartUp():
+
+	print("Starting server up.")
+	
+	server = "209.97.147.243" #settings
 	channel = "#channel1"
+	hostname = "bot_name"
 	
-	#getVals = list([val for val in hostname if val.isalnum()])
-	#hostname_tmp = "".join(getVals)
-	hostname="tmp_hostname"
+	botnick = hostname[:10]
+	IRC = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #defines the socket
+	IRC.connect((server, 6667))                                                      #connects to the server
+	time.sleep(2)
+	IRC.send(bytes("USER "+ botnick +" "+ botnick +" "+ botnick +" :This is a fun bot!\n", "UTF-8")) #user authentication
+	time.sleep(2)
+	IRC.send(bytes("NICK "+ botnick +"\n", "UTF-8"))                            #sets nick
+	time.sleep(2)
+	IRC.send(bytes("JOIN "+ channel +"\n", "UTF-8"))        #join the chan
 	
-	botnick = hostname[:10]#"dasdadsas"
-	irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #defines the socket
-	irc.connect((server, 6667))                                                      #connects to the server
-	time.sleep(3)
-	irc.send(bytes("USER "+ botnick +" "+ botnick +" "+ botnick +" :This is a fun bot!\n", "UTF-8")) #user authentication
-	time.sleep(3)
-	irc.send(bytes("NICK "+ botnick +"\n", "UTF-8"))                            #sets nick
-	time.sleep(3)
-	irc.send(bytes("JOIN "+ channel +"\n", "UTF-8"))        #join the chan
-	print("Enviando mensaje\n")
-	time.sleep(3)
-	#irc.send(bytes("PRIVMSG ", "UTF-8") + bytes(channel, "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))
-	#irc.close()
+	print("Server stareted up succesfully.")
 	
 	while(1):
 		try:
-			text = irc.recv(2048).decode("UTF-8")   #receive the text
+			text = IRC.recv(2048).decode("UTF-8")   #receive the text
 			print (text)
 			if text.find("PING") != -1:
-				irc.send(bytes("PONG ", "UTF-8") + bytes(text.split()[1], "UTF-8") + bytes("\r\n", "UTF-8"))
+				IRC.send(bytes("PONG ", "UTF-8") + bytes(text.split()[1], "UTF-8") + bytes("\r\n", "UTF-8"))
 			if text.find("PRIVMSG") != -1: #Verifica si alguien manda un msg.
-				irc.send(bytes("PRIVMSG ", "UTF-8") + bytes(channel, "UTF-8") + bytes(" :", "UTF-8") + bytes(text, "UTF-8") + bytes("\r\n", "UTF-8"))
+				IRC.send(bytes("PRIVMSG ", "UTF-8") + bytes(channel, "UTF-8") + bytes(" :", "UTF-8") + bytes(text, "UTF-8") + bytes("\r\n", "UTF-8"))
 			if text.find("JOIN") != -1: #Verifica si entra alguien.
 				#irc.send(bytes("PRIVMSG ", "UTF-8") + bytes(channel, "UTF-8") + bytes(" :", "UTF-8") + bytes(text, "UTF-8") + bytes("\r\n", "UTF-8"))
 				if text.find("End of /NAMES list") != -1:
@@ -114,5 +113,3 @@ def serverManagment():
 				
 		except Exception:
 			pass
-	
-serverManagment()

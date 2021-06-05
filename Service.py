@@ -23,10 +23,10 @@ class Service():
         res = re.search('PublicKey\((.+?)\,', key_string)
         return res.group(1)
         
-    def createPacket(self, payload, ver, dst_ip, port):
+    def createPacket(self, payload, ver, dst_ip, port, shake):
         packet_to_send = IP(dst=dst_ip)
         packet_to_send /= TCP(dport=port)
-        packet_to_send /= CPPM(message=payload, messageLength=len(payload), version=ver)
+        packet_to_send /= CPPM(message=payload, messageLength=len(payload), version=ver, handshake=shake)
         packet_to_send = IP(raw(packet_to_send))
         return packet_to_send
     

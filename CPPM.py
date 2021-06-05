@@ -11,6 +11,7 @@ class CPPM(Packet):
         LenField('messageLength', 0, fmt="H"),
         ShortField("chksum", None),
         ShortField("version", 1),
+        ShortField("handshake", 0),
         StrField("message", "")
     ]
     

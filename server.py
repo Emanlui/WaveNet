@@ -5,11 +5,13 @@ from CPPM import *
 from Service import *
 import keys
 import socket
+import threading
 import uuid
 import requests
 import random
+import os
 from time import sleep
-
+import bot
 #import sound
 
 BUFFER_SIZE = 1024  
@@ -77,19 +79,6 @@ def choosingRoute(hops, ip):
 	 
 	return tmp_list
 
-
-
-def sendKeys(ip, port):
-	
-	key = ""
-	try:
-		with open('.ssh/id_rsa.pub', mode='rb') as pubk:
-			
-			key = pubk.read()
-	except Exception:
-		print("error")
-	return key
-
 def listenForMessage(filename):
 	try:
 		file = open(filename, "rb")
@@ -114,43 +103,105 @@ def chunkMessage(message, chunk_size):
 	chunks = [message[i:i+chunk_size] for i in range(0, len(message), chunk_size)]
 	return chunks
 
-def server():
+def sendMessageIRC():
+
 	
+
+	sleep(3)
+
+	for i in LIST_OF_HOST:
+		bot.sendMessageIRC(i)
+
+def threatListen():
+
 	my_ip = sys.argv[1]
 	my_port = sys.argv[2]
 
+	getHost()
+
 	try:    
 	   
-            #ps = Service(my_ip, int(my_port))
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.bind((my_ip, int(my_port)))
-            s.listen(1)
-            s.settimeout(100)
+			#ps = Service(my_ip, int(my_port))
+			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.bind((my_ip, int(my_port)))
+			s.listen(1)
+			s.settimeout(100)
 
-            while True:
-              
-                conn, addr = s.accept()
+			while True:
+			  
+				conn, addr = s.accept()
 
-                print('Connection address: {}'.format(addr))
-                try:
+				print('Connection address: {}'.format(addr))
+				try:
 
-                    data = conn.recv(BUFFER_SIZE)
-                    if data:
-                        packet = IP(data)
-                        received_packet = packet.getlayer(CPPM)
-                        received_packet.show()
-        
-                    else:
-                        pass
-                except Exception as server_error:
-                    #print(server_error)
-                    print('Error: {}'.format(server_error))
-                    conn.close()
-            
+					data = conn.recv(BUFFER_SIZE)
+					if data:
+						packet = IP(data)
+						received_packet = packet.getlayer(CPPM)
+						received_packet.show()
+		
+						if(received_packet.handshake == 1):
+
+							print(received_packet.message.decode())
+
+							f = open("host.routes", "a")
+							f.write(received_packet.message.decode()+"\n")
+							f.close()
+							print("File wirtten")
+							getHost()
+							sendMessageIRC()
+
+					else:
+						pass
+				except Exception as server_error:
+					#print(server_error)
+					print('Error: {}'.format(server_error))
+					conn.close()
+			
 	
 	except Exception as client_error:
 
 		print('Error: {}'.format(client_error))
+		print("Escuchar")
+		sleep(1)
+def escuchar():
+
+	while(1):
+		print("Escuchar")
+		sleep(1)
+	
+def hablar():
+	while(1):
+		print("Hablar")
+		sleep(1)
+
+def IRCServer():
+	bot.serverManagment()
+
+def server():
+	
+	os.system('echo "" > host.routes')
+
+	threads = list()
+
+	t1 = threading.Thread(target=threatListen, args=())
+	t2 = threading.Thread(target=escuchar, args=())
+	t3 = threading.Thread(target=hablar, args=())
+	t4 = threading.Thread(target=IRCServer, args=())
+
+	threads.append(t1)
+	threads.append(t2)
+	threads.append(t3)
+	threads.append(t4)
+
+	t1.start()
+	t2.start()
+	t3.start()
+	t4.start()
+
+	for i in threads:
+		i.join()
+
 
 if __name__ == '__main__':
 		

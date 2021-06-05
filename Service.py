@@ -19,35 +19,24 @@ class Service():
         sa = SecurityAssociation(ESP, spi=0xdeadbeef, crypt_algo='AES-CBC', crypt_key=str(key).encode()) 
         return sa.decrypt(packet)
     
-    def encryptPacketWithKeysList(self, payload, keys_ip):
- 
-        for i in range(len(keys_ip)):
-            if(i == 0):
-                packet = self.createPacket(payload, 5,keys_ip[0][1],6000)
-                packet = self.encryptPacket(packet,self.getKey(keys_ip[0][0]))
-
-            else:
-                packet = self.createPacket(packet, 5,keys_ip[i][1],6000)
-                packet = self.encryptPacket(packet,self.getKey(keys_ip[i][0]))
-            #packet.show()
-        return packet
-    
     def getKey(self, key_string):
         res = re.search('PublicKey\((.+?)\,', key_string)
         return res.group(1)
         
-    def createPacket(self, payload, ver, dst_ip, port):
+    def createPacket(self, payload, ver, dst_ip, port, shake):
         packet_to_send = IP(dst=dst_ip)
         packet_to_send /= TCP(dport=port)
-        packet_to_send /= CPPM(message=payload, messageLength=len(payload), version=ver)
+        packet_to_send /= CPPM(message=payload, messageLength=len(payload), version=ver, handshake=shake)
         packet_to_send = IP(raw(packet_to_send))
         return packet_to_send
     
     def sendPacket(self, packet):
         try:    
+
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((self.TCP_IP, self.TCP_DPORT))
+            s.connect((self.TCP_IP, int(self.TCP_DPORT)))
             socketsr1 = StreamSocket(s, CPPM)
+            
             ans = socketsr1.sr1(packet, timeout=2, verbose=False)
             s.close()
         

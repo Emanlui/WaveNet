@@ -4,7 +4,11 @@ import sys
 import os
 import random
 import time
-from server import sendKeys
+
+def sendMessageIRC(msg):
+	irc.send(bytes("PRIVMSG ", "UTF-8") + bytes(channel, "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))
+
+	
 
 def getHostData(raw_string):
 	
@@ -113,3 +117,4 @@ def serverStartUp():
 				
 		except Exception:
 			pass
+	

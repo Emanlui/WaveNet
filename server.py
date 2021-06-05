@@ -10,8 +10,8 @@ import uuid
 import requests
 import random
 import os
-import bot
 from time import sleep
+import bot
 #import sound
 
 BUFFER_SIZE = 1024  
@@ -117,8 +117,6 @@ def sendKeys(ip, port):
 
 def sendMessageIRC():
 
-	
-
 	sleep(3)
 
 	for i in LIST_OF_HOST:
@@ -162,7 +160,6 @@ def threatListen():
 							with open("host.txt", "a") as f:
 								f.write(received_packet.message.decode())	
 								f.close()
-							getHost()
 							sendMessageIRC()
 
 					else:
@@ -190,7 +187,7 @@ def hablar():
 		sleep(1)
 
 def IRCServer():
-	bot.serverManagment()
+	serverManagment()
 
 def server():
 	

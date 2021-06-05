@@ -18,7 +18,7 @@ def sendDataToserver(ip, port, srv_ip, srv_port):
 		
 		pub = pubk.read()
 	pub = pub.decode().split("\n")
-	msg =  ip + "|" + sys.argv[5] + "|" + port  + "|" + pub[1]+pub[2]
+	msg = "JOIN " + ip + "|" + sys.argv[5] + "|" + port  + "|" + pub[1]+pub[2]
 	ps = Service(srv_ip, int(srv_port)) 
 	packet = ps.createPacket(msg, 1, srv_ip, int(srv_port),1)
 	packet.show()

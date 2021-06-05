@@ -116,4 +116,3 @@ def serverManagment():
 		except Exception:
 			pass
 	
-serverManagment()

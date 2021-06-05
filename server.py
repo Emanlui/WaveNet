@@ -10,6 +10,7 @@ import uuid
 import requests
 import random
 import os
+import bot
 from time import sleep
 #import sound
 
@@ -52,15 +53,16 @@ def getHost():
 
 	global LIST_OF_HOST
 	
-	with open('host.routes', mode='rb') as f:
+	with open('host.txt', mode='rb') as f:
 
-		for line in f:
-			data = line.decode('UTF-8').split('|')
-			ip = data[0]
-			hostname = data[1]
-			port = data[2]
-			key = data[3]
-			LIST_OF_HOST.append({"ip":ip,"hostname":hostname,"port":int(port),"key":key})
+		for index,line in f:
+			if(index != 0):
+				data = line.decode('UTF-8').split('|')
+				ip = data[0]
+				hostname = data[1]
+				port = data[2]
+				key = data[3]
+				LIST_OF_HOST.append({"ip":ip,"hostname":hostname,"port":int(port),"key":key})
 	
 
 def choosingRoute(hops, ip):
@@ -122,12 +124,15 @@ def sendMessageIRC():
 	for i in LIST_OF_HOST:
 		bot.sendMessageIRC(i)
 
+def IRCserver():
+	print("IRC")
+	bot.serverManagment()
+
 def threatListen():
 
 	my_ip = sys.argv[1]
 	my_port = sys.argv[2]
 
-	getHost()
 
 	try:    
 	   
@@ -148,16 +153,15 @@ def threatListen():
 					if data:
 						packet = IP(data)
 						received_packet = packet.getlayer(CPPM)
-						received_packet.show()
+						#received_packet.show()
 		
 						if(received_packet.handshake == 1):
 
 							print(received_packet.message.decode())
 
-							f = open("host.routes", "a")
-							f.write(received_packet.message.decode()+"\n")
-							f.close()
-							print("File wirtten")
+							with open("host.txt", "a") as f:
+								f.write(received_packet.message.decode())	
+								f.close()
 							getHost()
 							sendMessageIRC()
 
@@ -190,14 +194,16 @@ def IRCServer():
 
 def server():
 	
-	os.system('echo "" > host.routes')
+	with open("host.txt", "w") as f:
+		f.write("")	
+		f.close()
 
 	threads = list()
 
 	t1 = threading.Thread(target=threatListen, args=())
 	t2 = threading.Thread(target=escuchar, args=())
 	t3 = threading.Thread(target=hablar, args=())
-	t4 = threading.Thread(target=IRCServer, args=())
+	t4 = threading.Thread(target=IRCserver, args=())
 
 	threads.append(t1)
 	threads.append(t2)

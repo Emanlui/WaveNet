@@ -11,7 +11,6 @@ import requests
 import random
 import os
 from time import sleep
-import bot
 #import sound
 
 BUFFER_SIZE = 1024  
@@ -102,6 +101,17 @@ def joinMessageBytes(message_chunks):
 def chunkMessage(message, chunk_size):
 	chunks = [message[i:i+chunk_size] for i in range(0, len(message), chunk_size)]
 	return chunks
+
+def sendKeys(ip, port):
+	
+	key = ""
+	try:
+		with open('.ssh/id_rsa.pub', mode='rb') as pubk:
+			
+			key = pubk.read()
+	except Exception:
+		print("error")
+	return key
 
 def sendMessageIRC():
 

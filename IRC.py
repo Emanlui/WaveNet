@@ -51,8 +51,8 @@ def addHost(raw_data):
 	line = raw_data.split(" ")[1] + "\n"
 	
 	if line == "JOIN\n":
-		line = line = getHostData(raw_data)
-	
+		line = getHostData(raw_data)
+	print("print")
 	with open('routes.txt', 'a') as f:
 		f.write(line)
 	
@@ -65,17 +65,16 @@ def deleteHost(raw_data):
 	#line = getHostData(raw_data)
 	line = raw_data.split(" ")[1] + "\n"
 	if line == "QUIT\n":
-		line = line = getHostData(raw_data)
-	
+		line = getHostData(raw_data)
 	a_file = open("routes.txt", "r")
 	lines = a_file.readlines()
 	a_file.close()
-	#print(lines)
+	
 	index = 0
-	for i, line in lines:
-		if line.find(line) != -1:
+	for i in range(len(lines)):
+		if lines[i].find(line) != -1:
 			index = i
-			break
+	
 	del lines[index]
 	new_file = open("routes.txt", "w+")
 

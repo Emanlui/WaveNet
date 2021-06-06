@@ -157,11 +157,7 @@ def threatListen():
 							with open("host.txt", "a") as f:
 								f.write(received_packet.message.decode().split(" ")[1] + "\n")	
 								f.close()
-							sendMessageIRC(received_packet.message.decode())
-						
-						else:
-							#received_packet.show()
-							sendMessageIRC(received_packet.message.decode())
+						sendMessageIRC(received_packet.message.decode())
 					else:
 						pass
 				except Exception as server_error:

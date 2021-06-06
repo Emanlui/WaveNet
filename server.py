@@ -18,10 +18,37 @@ BUFFER_SIZE = 1024
 
 LIST_OF_HOST = []
 
+def resendToHost(received_packet):
+
+	#received_packet.show()
+	
+	msg = received_packet.message.decode().split("\n")
+
+	validation = False
+
+	print(LIST_OF_HOST)
+
+	try:
+		for i in LIST_OF_HOST:
+			if(i[0] == msg[0] and i[2] == int(msg[1])):
+				validation = True
+				break
+	except:
+		pass
+
+	if(validation == False):
+		print("HABLANDO")
+	else:
+
+		ps = Service() 
+		packet = ps.createPacket(msg[2], 1, msg[0], int(msg[1]),0)
+		#packet.show()
+		ps.sendPacket(packet, msg[0], int(msg[1]))
+
 def getHostData(ip):
 	
 	for i in LIST_OF_HOST:
-		if(i['ip'] == ip):
+		if(i[0] == ip):
 			return i
 	return Null
 
@@ -55,15 +82,14 @@ def getHost():
 	
 	with open('host.txt', mode='rb') as f:
 
-		for index,line in f:
-			if(index != 0):
-				data = line.decode('UTF-8').split('|')
-				ip = data[0]
-				hostname = data[1]
-				port = data[2]
-				key = data[3]
-				LIST_OF_HOST.append({"ip":ip,"hostname":hostname,"port":int(port),"key":key})
-	
+		for line in f:
+			data = line.decode("utf-8").split('|')
+			ip = data[0]
+			hostname = data[1]
+			port = data[2]
+			key = data[3]
+			LIST_OF_HOST.append([ip,hostname,int(port),key])
+
 
 def choosingRoute(hops, ip):
 
@@ -72,8 +98,8 @@ def choosingRoute(hops, ip):
 	while(hops):
 		index = random.randint(0,len(LIST_OF_HOST)-1)	
 	
-		if(LIST_OF_HOST[index]["ip"] not in tmp_list and ip != LIST_OF_HOST[index]["ip"]):
-			host = [LIST_OF_HOST[index]["ip"], LIST_OF_HOST[index]["port"],LIST_OF_HOST[index]["key"]]
+		if(LIST_OF_HOST[index][0] not in tmp_list and ip != LIST_OF_HOST[index][0]):
+			host = [LIST_OF_HOST[index][0], LIST_OF_HOST[index][2],LIST_OF_HOST[index][3]]
 			tmp_list.append(host)
 			hops = hops - 1
 			#print(LIST_OF_HOST[in`dex]["key"])
@@ -115,16 +141,6 @@ def sendKeys(ip, port):
 		print("error")
 	return key
 
-def sendMessageIRC(msg):
-
-	#sleep(3)
-
-	#print(len(LIST_OF_HOST), "NUMERO DE HOSTS")
-	
-	#for i in LIST_OF_HOST:
-		#bot.sendMessageIRC(i)
-	IRC.sendMessageIRC(msg)
-
 def threatListen():
 
 	my_ip = sys.argv[1]
@@ -157,9 +173,11 @@ def threatListen():
 							with open("host.txt", "a") as f:
 								f.write(received_packet.message.decode().split(" ")[1] + "\n")	
 								f.close()
-							sendMessageIRC(received_packet.message.decode())
+							
+							getHost()
 						else:
-							sendMessageIRC(received_packet.message.decode())
+							resendToHost(received_packet)
+						IRC.messageManagementIRC(received_packet.message.decode(), 0)
 					else:
 						pass
 				except Exception as server_error:
@@ -190,6 +208,10 @@ def IRCServer():
 def server():
 	
 	with open("host.txt", "w") as f:
+		f.write("")	
+		f.close()
+
+	with open("routes.txt", "w") as f:
 		f.write("")	
 		f.close()
 

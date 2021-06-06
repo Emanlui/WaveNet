@@ -11,13 +11,19 @@ def sendMessageIRC(msg):
 	
 	global IRC
 	#print("Printing msg.")
-
+	
 	if msg.find("JOIN") != -1:
-		addHost(msg)
+		if msg.find("PRIVMSG") != -1:
+			addHost(msg.split(" ")[3:])
+		else:			
+			addHost(msg)
 	if msg.find("QUIT") != -1:
-		deleteHost(msg)
-	else:
-		IRC.send(bytes("PRIVMSG ", "UTF-8") + bytes("#channel1", "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))
+		if msg.find("PRIVMSG") != -1:
+			deleteHost(msg.split(" ")[3:])
+		else:
+			deleteHost(msg)
+	
+	IRC.send(bytes("PRIVMSG ", "UTF-8") + bytes("#channel1", "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))
 
 def getHostData(raw_string):
 	

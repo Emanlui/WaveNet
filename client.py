@@ -58,6 +58,9 @@ def client():
 			packet = ps.createPacket(my_msg, 1, ip_dst, int(srv_port),0)
 			packet.show()
 			ps.sendPacket(packet, srv_ip, int(srv_port))
+			
+			if my_msg.find("QUIT") != -1:
+				exit(0)
 		
 		except Exception as client_error:
 				print(client_error)

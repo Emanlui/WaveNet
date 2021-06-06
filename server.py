@@ -11,7 +11,7 @@ import requests
 import random
 import os
 from time import sleep
-import bot
+import IRC
 #import sound
 
 BUFFER_SIZE = 1024  
@@ -115,16 +115,15 @@ def sendKeys(ip, port):
 		print("error")
 	return key
 
-def sendMessageIRC():
+def sendMessageIRC(msg):
 
-	sleep(3)
+	#sleep(3)
 
-	for i in LIST_OF_HOST:
-		bot.sendMessageIRC(i)
-
-def IRCserver():
-	print("IRC")
-	bot.serverManagment()
+	#print(len(LIST_OF_HOST), "NUMERO DE HOSTS")
+	
+	#for i in LIST_OF_HOST:
+		#bot.sendMessageIRC(i)
+	IRC.sendMessageIRC(msg)
 
 def threatListen():
 
@@ -154,14 +153,15 @@ def threatListen():
 						#received_packet.show()
 		
 						if(received_packet.handshake == 1):
-
-							print(received_packet.message.decode())
-
+							# Recien entrando al server.
 							with open("host.txt", "a") as f:
-								f.write(received_packet.message.decode())	
+								f.write(received_packet.message.decode().split(" ")[1] + "\n")	
 								f.close()
-							sendMessageIRC()
-
+							sendMessageIRC(received_packet.message.decode())
+						
+						else:
+							#received_packet.show()
+							sendMessageIRC(received_packet.message.decode())
 					else:
 						pass
 				except Exception as server_error:
@@ -187,7 +187,7 @@ def hablar():
 		sleep(1)
 
 def IRCServer():
-	serverManagment()
+	IRC.serverManagment(sys.argv[3])
 
 def server():
 	
@@ -200,7 +200,7 @@ def server():
 	t1 = threading.Thread(target=threatListen, args=())
 	t2 = threading.Thread(target=escuchar, args=())
 	t3 = threading.Thread(target=hablar, args=())
-	t4 = threading.Thread(target=IRCserver, args=())
+	t4 = threading.Thread(target=IRCServer, args=())
 
 	threads.append(t1)
 	threads.append(t2)

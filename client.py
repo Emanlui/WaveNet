@@ -44,7 +44,6 @@ def client():
 	sendDataToserver(my_ip, my_port, srv_ip, srv_port)
 
 	while(True):	
-	
 		try:  
 	
 			print("Mi mensaje:")

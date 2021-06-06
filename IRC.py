@@ -46,13 +46,12 @@ def getHostData(raw_string):
 def addHost(raw_data):
 	
 	print("Adding host.")
-	
+	print(raw_data)
 	#line = getHostData(raw_data)
 	line = raw_data.split(" ")[1] + "\n"
 	
 	if line == "JOIN\n":
 		line = getHostData(raw_data)
-	print("print")
 	with open('routes.txt', 'a') as f:
 		f.write(line)
 	
@@ -61,8 +60,7 @@ def addHost(raw_data):
 def deleteHost(raw_data):
 	
 	print("Deleting host.")
-	
-	#line = getHostData(raw_data)
+	print(raw_data)
 	line = raw_data.split(" ")[1] + "\n"
 	if line == "QUIT\n":
 		line = getHostData(raw_data)

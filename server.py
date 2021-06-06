@@ -137,7 +137,7 @@ def threatListen():
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			s.bind((my_ip, int(my_port)))
 			s.listen(1)
-			s.settimeout(100)
+			#s.settimeout(100)
 
 			while True:
 			  
@@ -157,7 +157,9 @@ def threatListen():
 							with open("host.txt", "a") as f:
 								f.write(received_packet.message.decode().split(" ")[1] + "\n")	
 								f.close()
-						sendMessageIRC(received_packet.message.decode())
+							sendMessageIRC(received_packet.message.decode())
+						else:
+							sendMessageIRC(received_packet.message.decode())
 					else:
 						pass
 				except Exception as server_error:

@@ -15,10 +15,18 @@ class CPPM(Packet):
         StrField("message", "")
     ]
     
-    def post_build(self, p, pay):
-        p += pay
-        if(self.chksum == None):
-            self.chksum = checksum(p)
-        return p 
+    def validateChecksum(self, packet):
+        packet_chksum = packet.chksum
+        packet.chksum = 0
+        packet_bytes = raw(packet)
+        packet.chksum = packet_chksum
+        return checksum(packet_bytes) == packet_chksum
     
+    def setCheksum(self, packet):
+        packet.chksum = 0
+        packet_bytes = raw(packet)
+        packet.chksum = checksum(packet_bytes)
+        return packet
+       
+        
 bind_layers(TCP, CPPM)

@@ -43,7 +43,10 @@ class Service():
         except Exception as client_error:
             print('Error: {}'.format(client_error))
       
-    
+    def packetToBytes(self, packet):
+        return raw(packet)
+    def bytesToPacket(self, packet):
+        return CPPM(packet)
     def receivePacket(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((self.TCP_IP, self.TCP_DPORT))

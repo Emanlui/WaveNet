@@ -198,18 +198,18 @@ def server():
 	threads = list()
 
 	t1 = threading.Thread(target=threatListen, args=())
-	t2 = threading.Thread(target=escuchar, args=())
-	t3 = threading.Thread(target=hablar, args=())
+	#t2 = threading.Thread(target=escuchar, args=())
+	#t3 = threading.Thread(target=hablar, args=())
 	t4 = threading.Thread(target=IRCServer, args=())
 
 	threads.append(t1)
-	threads.append(t2)
-	threads.append(t3)
+	#threads.append(t2)
+	#threads.append(t3)
 	threads.append(t4)
 
 	t1.start()
-	t2.start()
-	t3.start()
+	#t2.start()
+	#t3.start()
 	t4.start()
 
 	for i in threads:

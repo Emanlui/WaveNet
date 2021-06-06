@@ -34,7 +34,7 @@ class Service():
         try:    
 
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((ip, int(port))
+            s.connect((ip, int(port)))
             socketsr1 = StreamSocket(s, CPPM)
             
             ans = socketsr1.sr1(packet, timeout=2, verbose=False)

@@ -30,11 +30,11 @@ class Service():
         packet_to_send = IP(raw(packet_to_send))
         return packet_to_send
     
-    def sendPacket(self, packet):
+    def sendPacket(self, packet, ip, port):
         try:    
 
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((self.TCP_IP, int(self.TCP_DPORT)))
+            s.connect((ip, int(port))
             socketsr1 = StreamSocket(s, CPPM)
             
             ans = socketsr1.sr1(packet, timeout=2, verbose=False)

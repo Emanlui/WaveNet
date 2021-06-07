@@ -339,6 +339,4 @@ def menu():
 	elif option == '3':
 		sound.decodeAudio()
 
-test()
-
 menu()

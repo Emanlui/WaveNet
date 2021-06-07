@@ -167,6 +167,7 @@ class Sound:
 		and set the index into sd.default.device
 		'''
 		#print("Inputs: ",sd.query_devices())
+		#python3 -m sounddevice
 		sd.default.device = 1
 		
 		print("Grabando en 3...")
@@ -198,7 +199,7 @@ class Sound:
 				codefile_wav = "output.wav"
 				loop = False
 			elif (option == "2"):
-				codefile_wav = "emmitedMessage.wav"
+				codefile_wav = "emittedMessage.wav"
 				loop = False
 			else:
 				
@@ -317,7 +318,7 @@ class Sound:
 		with open("emittedMessage.wav", 'wb') as out_f:
 			playlist.export(out_f, format='wav')
 
-		print("Emitted Message successfully generated! (emmitedMessage.wav)")
+		print("Emitted Message successfully generated! (emittedMessage.wav)")
 
 
 

@@ -25,21 +25,21 @@ def sendAllRoutes():
 	print("All routes sent.")
 
 
-def messageManagementIRC(text, flag):
+def messageManagementIRC(text, msg_from):
 	
 	global IRC, ROUTES_LIST, FLAG
+	
+	print("Printing incoming msg from " + msg_from, text)
 	
 	if text.find("Sending all routes.") != -1:
 		FLAG = 1
 	
 	if FLAG == 1:
-		ROUTES_LIST.append(text)
+		ROUTES_LIST += text
 	
 	if text.find("All routes sent.") != -1:
 		FLAG = 0
 		print(ROUTES_LIST + "ROUTES LIST!!!!!!!!")
-	
-	print("Printing incoming msg = " + text)
 	
 	if text.find("PING") != -1:
 		IRC.send(bytes("PONG ", "UTF-8") + bytes(text.split()[1], "UTF-8") + bytes("\r\n", "UTF-8"))
@@ -47,7 +47,7 @@ def messageManagementIRC(text, flag):
 		if text.find("End of /NAMES list") != -1:
 			pass
 		else:
-			AddOrDeleteClient(text, flag)
+			AddOrDeleteClient(text)
 	#else:
 	#	sendPrivMessageIRC(text)
 
@@ -57,7 +57,7 @@ def sendPrivMessageIRC(msg):
 	print("Printing PRIVMSG.")
 	IRC.send(bytes("PRIVMSG ", "UTF-8") + bytes("#channel2", "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))
 
-def AddOrDeleteClient(msg, flag):
+def AddOrDeleteClient(msg):
 	
 	#JOIN - QUIT = Palabras reservadas.
 	# flag = 1 -> remote
@@ -81,22 +81,6 @@ def AddOrDeleteClient(msg, flag):
 		
 	else:
 		IRC.send(bytes("PRIVMSG ", "UTF-8") + bytes("#channel2", "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))	
-	
-	#---------------------------------
-	'''
-	if msg.find("JOIN") != -1:
-		if msg.find("PRIVMSG") != -1:
-			addHost(msg.split(" ")[3:])
-		else:			
-			addHost(msg)
-	if msg.find("QUIT") != -1:
-		if msg.find("PRIVMSG") != -1:
-			deleteHost(msg.split(" ")[3:])
-		else:
-			deleteHost(msg)
-	
-	IRC.send(bytes("PRIVMSG ", "UTF-8") + bytes("#channel1", "UTF-8") + bytes(" :", "UTF-8") + bytes(msg, "UTF-8") + bytes("\r\n", "UTF-8"))
-	'''
 
 def addHost(raw_data):
 	
@@ -137,7 +121,7 @@ def deleteHost(raw_data):
 	new_file.close()
 	
 	print("Host deleted.")
-	#sendAllRoutes()
+	sendAllRoutes()
 	
 def closeServer():
 	
@@ -155,21 +139,18 @@ def serverManagment(hostname):
 	IRC = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	IRC.connect((server, 6667))
 	time.sleep(2)
-	IRC.send(bytes("USER "+ botnick +" "+ botnick +" "+ botnick +" :This is a fun bot!\n", "UTF-8")) #user authentication
+	IRC.send(bytes("USER "+ botnick +" "+ botnick +" "+ botnick +" :This is a fun bot!\n", "UTF-8"))
 	time.sleep(2)
 	IRC.send(bytes("NICK "+ botnick +"\n", "UTF-8"))
 	time.sleep(2)
 	IRC.send(bytes("JOIN "+ channel +"\n", "UTF-8"))
 	time.sleep(2)
 	
-	flag = 0
 	while(1):
 		try:
 			text = IRC.recv(2048).decode("UTF-8")
-			if flag < 2:
-				print(text + " Text from start.")
-				flag += 1
-			messageManagementIRC(text, 1)
+			print(text)
+			messageManagementIRC(text, "remote")
 				
 		except Exception as IRCError:
 			print('Error: {}'.format(IRCError))

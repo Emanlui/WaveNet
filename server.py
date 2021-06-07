@@ -167,17 +167,16 @@ def threatListen():
 						packet = IP(data)
 						received_packet = packet.getlayer(CPPM)
 						#received_packet.show()
-		
+						
 						if(received_packet.handshake == 1):
-							# Recien entrando al server.
 							with open("host.txt", "a") as f:
-								f.write(received_packet.message.decode().split(" ")[1] + "\n")	
+								f.write(received_packet.message.decode() + "\n")
 								f.close()
-							
+								
 							getHost()
+							IRC.messageManagementIRC("JOIN " + received_packet.message.decode(), "local")
 						else:
 							resendToHost(received_packet)
-						IRC.messageManagementIRC(received_packet.message.decode(), 0)
 					else:
 						pass
 				except Exception as server_error:

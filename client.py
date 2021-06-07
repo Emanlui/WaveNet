@@ -20,7 +20,7 @@ def sendDataToserver(ip, port, srv_ip, srv_port):
 		
 		pub = pubk.read()
 	pub = pub.decode().split("\n")
-	msg = "JOIN " + ip + "|" + sys.argv[5] + "|" + port  + "|" + pub[1]+pub[2]
+	msg = ip + "|" + sys.argv[5] + "|" + port  + "|" + pub[1]+pub[2]
 	ps = Service() 
 	packet = ps.createPacket(msg, 1, srv_ip, int(srv_port),1)
 	packet.show()
@@ -71,6 +71,10 @@ def sendPacket():
 		   
 			my_msg = input()	
 			print("Ip de dest:")
+			
+			if my_msg == "QUIT":
+				exit(0)
+			
 			ip_dst = input()
 			print("Port de dest:")
 			port_dst = input()
@@ -81,9 +85,6 @@ def sendPacket():
 			packet = ps.createPacket(my_msg, 1, sys.argv[3], int(sys.argv[4]),0)
 			#packet.show()
 			ps.sendPacket(packet, sys.argv[3], int(sys.argv[4]))
-			
-			if my_msg.find("QUIT") != -1:
-				sys.exit()
 		
 		except Exception as client_error:
 				#print(client_error)

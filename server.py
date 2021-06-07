@@ -27,8 +27,6 @@ def resendToHost(received_packet):
 
 	validation = False
 
-	print(LIST_OF_HOST)
-
 	try:
 		for i in LIST_OF_HOST:
 			if(i[0] == msg[0] and i[2] == int(msg[1])):
@@ -38,7 +36,7 @@ def resendToHost(received_packet):
 		pass
 
 	if(validation == False):
-		print("Validation error.")
+		print("HABLANDO")
 	else:
 		print("CREANDO PAQUETE")
 		ps = Service() 
@@ -168,12 +166,13 @@ def threatListen():
 						packet = IP(data)
 						received_packet = packet.getlayer(CPPM)
 						#received_packet.show()
-						
+		
 						if(received_packet.handshake == 1):
+							# Recien entrando al server.
 							with open("host.txt", "a") as f:
-								f.write(received_packet.message.decode() + "\n")
+								f.write(received_packet.message.decode().split(" ")[1] + "\n")	
 								f.close()
-								
+							
 							getHost()
 						elif(received_packet.handshake == 2):
 							getHost()
@@ -188,6 +187,7 @@ def threatListen():
 
 						else:
 							resendToHost(received_packet)
+						IRC.messageManagementIRC(received_packet.message.decode(), 0)
 					else:
 						pass
 				except Exception as server_error:

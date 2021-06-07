@@ -20,7 +20,7 @@ def sendDataToserver(ip, port, srv_ip, srv_port):
 		
 		pub = pubk.read()
 	pub = pub.decode().split("\n")
-	msg = "JOIN " + ip + "|" + sys.argv[5] + "|" + port  + "|" + ''.join(pub[1:12])
+	msg = "JOIN " + ip + "|" + sys.argv[5] + "|" + port  + "|" + ''.join(pub[1:4])
 	ps = Service() 
 	packet = ps.createPacket(msg, 1, srv_ip, int(srv_port),1)
 	packet.show()
@@ -53,28 +53,38 @@ def listenPacket():
 				received_packet = packet.getlayer(CPPM)
 				received_packet.show()
 	
-				if(received_packet.handshake == 2):
+				if(received_packet.handshake == 0):
 					
 					my_msg = received_packet.message.decode().split("\n")
 					print(my_msg)
 					if(my_msg[0] == my_ip and my_msg[1] == my_port):
 
-						print(base64.b64decode(my_msg[2]))
-						open_msg = decryptMyPacket(base64.b64decode(my_msg[2]))
+						l = my_msg[2][:172]
+						print("L")
+						print(l)
+						r = my_msg[2][172:]	
+						print("R")
+						print(r)
+						try:
+							open_msg = decryptMyPacket(base64.b64decode(l))+r
+							print(open_msg)
+							val = True
 						
-						print(open_msg)
-						split_open_msg = open_msg.split("\n")
-
-						if(len(split_open_msg) > 1):
+							split_open_msg = open_msg.split("\n")
+						except:
+							val = False
+						if(True):
 
 							print("Este mensaje no es mio")
 							ps = Service() 
-							packet = ps.createPacket(open_msg, 1, srv_ip, int(srv_port),0)
+							packet = ps.createPacket(open_msg, 1, sys.argv[3], int(sys.argv[4]),0)
 							packet.show()
-							ps.sendPacket(packet,srv_ip, srv_port)		
+							ps.sendPacket(packet,sys.argv[3], int(sys.argv[4]))		
 						else:
-							print(split_open_msg)
+							print(open_msg)
 							print("Este mensaje es mio")
+					else:
+						print(decryptMyPacket(my_msg.decode()))
 				readPacket(received_packet)
 
 			else:
@@ -119,6 +129,7 @@ def client():
 	srv_ip = sys.argv[3]
 	srv_port = sys.argv[4]
 
+
 	if(keys.openKeys()):
 		print("Reading keys")
 	else:
@@ -128,7 +139,7 @@ def client():
 		print("There was an error reading the keys")
 		exit(0)
 	
-	 
+	print(base64.b64encode(keys.encryptMyPacket("abc")).decode("utf-8"))	  
 	sendDataToserver(my_ip, my_port, srv_ip, srv_port)
 	
 	threads = list()

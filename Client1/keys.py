@@ -72,8 +72,11 @@ def verifyKeys():
 	return True
 
 def decryptMyPacket(message):
-	
+	print("MSG")
+	print(message)
+	print(type(message))
 	newMessage = rsa.decrypt(message, PRIVATE_KEY).decode()	  
+	print(type(newMessage))
 	return newMessage
 
 def encryptMyPacket(message):
@@ -82,11 +85,10 @@ def encryptMyPacket(message):
 	return newMessage
 
 def encrypt(message, pub_key):
-	
+	#print(pub_key)
 	pub_key = "-----BEGIN RSA PUBLIC KEY-----\n" + pub_key + "-----END RSA PUBLIC KEY-----\n"
-
-
+	
 	pub_key = rsa.PublicKey.load_pkcs1(pub_key)
-
+	
 	newMessage = rsa.encrypt(message.encode(),pub_key)
 	return newMessage

@@ -12,21 +12,20 @@ import random
 import os
 from time import sleep
 import IRC
+import base64
 #import sound
 
-BUFFER_SIZE = 1024  
+BUFFER_SIZE = 4096  
 
 LIST_OF_HOST = []
 
 def resendToHost(received_packet):
 
-	#received_packet.show()
+	received_packet.show()
 	
 	msg = received_packet.message.decode().split("\n")
 
 	validation = False
-
-	print(LIST_OF_HOST)
 
 	try:
 		for i in LIST_OF_HOST:
@@ -39,47 +38,48 @@ def resendToHost(received_packet):
 	if(validation == False):
 		print("HABLANDO")
 	else:
-
+		print("CREANDO PAQUETE")
 		ps = Service() 
-		packet = ps.createPacket(msg[2], 1, msg[0], int(msg[1]),0)
+		packet = ps.createPacket(received_packet.message.decode(), 1, msg[0], int(msg[1]),0)
 		#packet.show()
 		ps.sendPacket(packet, msg[0], int(msg[1]))
 
-def getHostData(ip):
+def getHostData(ip, port):
 	
+	global LIST_OF_HOST
+	
+
 	for i in LIST_OF_HOST:
-		if(i[0] == ip):
+		if(str(i[0]) == str(ip) and int(i[2]) == int(port)):
 			return i
-	return Null
+	return None
 
-def createPacket(msg, destination_ip, destination_port, key, ip):
-	
+def createPacket(msg, destination_ip, destination_port, key):
+
+	msg = msg.split("\n")
 	getHost()
-	hops = choosingRoute(2, ip)
-	
-	#print(hops)
-	
-	msg1 = encrypt(base64.b64encode(msg.encode("utf-8")), key)
-	msg1 = str(destination_ip)+"\n"+str(destination_port)+"\n" + msg1.decode("utf-8")
-
-	#print(msg1)
-
-	msg2 = encrypt(base64.b64encode(msg1.encode("utf-8")), hops[0][2])
-	msg2 = str(hops[0][0])+"\n"+str(hops[0][1])+"\n" + msg2.decode("utf-8")
-	
-	#print(msg2)
-
-	msg3 = encrypt(base64.b64encode(msg2.encode("utf-8")), hops[1][2])
-	msg3 = str(hops[1][0])+"\n"+str(hops[1][1])+"\n" + msg3.decode("utf-8")
-	#print(msg3)
-	return msg3 
-
+	hops = choosingRoute(1)
+	msg1 = keys.encrypt(msg[2], key)
+	msg1 = str(destination_ip)+"\n"+str(destination_port)+"\n" + str(base64.b64encode(msg1).decode("utf-8"))
+	l = msg1[:70]
+	r = msg1[70:]
+	print(l)
+	print(r)
+	msg2 = ""
+	for i in hops:
+		msg2 = keys.encrypt(l, i[2])
+		msg2 = str(i[0])+"\n"+str(i[1])+"\n" + base64.b64encode(msg2).decode("utf-8") + r
+		l = msg2[:70]
+		r = msg2[70:]
+		print(l)
+		print(r)
+	return msg2, hops 
 
 
 def getHost():
 
 	global LIST_OF_HOST
-	
+	LIST_OF_HOST = []
 	with open('host.txt', mode='rb') as f:
 
 		for line in f:
@@ -91,19 +91,18 @@ def getHost():
 			LIST_OF_HOST.append([ip,hostname,int(port),key])
 
 
-def choosingRoute(hops, ip):
+def choosingRoute(hops):
 
 	tmp_list = []
-
+	global LIST_OF_HOST
 	while(hops):
 		index = random.randint(0,len(LIST_OF_HOST)-1)	
-	
-		if(LIST_OF_HOST[index][0] not in tmp_list and ip != LIST_OF_HOST[index][0]):
+		if(LIST_OF_HOST[index][0] not in tmp_list):
 			host = [LIST_OF_HOST[index][0], LIST_OF_HOST[index][2],LIST_OF_HOST[index][3]]
 			tmp_list.append(host)
 			hops = hops - 1
-			#print(LIST_OF_HOST[in`dex]["key"])
-	 
+	
+	
 	return tmp_list
 
 def listenForMessage(filename):
@@ -175,13 +174,24 @@ def threatListen():
 								f.close()
 							
 							getHost()
+						elif(received_packet.handshake == 2):
+							getHost()
+
+							dst_port = received_packet.message.decode().split("\n")[1]
+							my_msg,hops = createPacket(received_packet.message.decode(), packet[IP].dst, dst_port, getHostData(packet[IP].dst, dst_port)[3])
+
+							ps = Service() 
+							packet = ps.createPacket(my_msg, 1, hops[len(hops)-1][0], int(hops[len(hops)-1][1]),0)
+
+							ps.sendPacket(packet, hops[len(hops)-1][0], int(hops[len(hops)-1][1]))
+
 						else:
 							resendToHost(received_packet)
 						IRC.messageManagementIRC(received_packet.message.decode(), 0)
 					else:
 						pass
 				except Exception as server_error:
-					#print(server_error)
+					print(server_error)
 					print('Error: {}'.format(server_error))
 					conn.close()
 			

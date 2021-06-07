@@ -83,10 +83,10 @@ def sendPacket():
 			ps.sendPacket(packet, sys.argv[3], int(sys.argv[4]))
 			
 			if my_msg.find("QUIT") != -1:
-				exit(0)
+				sys.exit()
 		
 		except Exception as client_error:
-				print(client_error)
+				#print(client_error)
 				print('Error: {}'.format(client_error))
 
 def client():

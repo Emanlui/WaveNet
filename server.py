@@ -26,7 +26,7 @@ def resendToHost(received_packet):
 
 	validation = False
 
-	print(LIST_OF_HOST)
+	#print(LIST_OF_HOST)
 
 	try:
 		for i in LIST_OF_HOST:
@@ -37,7 +37,7 @@ def resendToHost(received_packet):
 		pass
 
 	if(validation == False):
-		print("HABLANDO")
+		print("Validation error.")
 	else:
 
 		ps = Service() 
